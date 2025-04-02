@@ -812,7 +812,7 @@
         "name": "Goblin Barrel",
         "rarity": "epic",
         "elixir": 3,
-        "classification": "win-condition",
+        "classification": "main-condition,win-condition'",
         "picture_url": "https://api-assets.clashroyale.com/cards/300/CoZdp5PpsTH858l212lAMeJxVJ0zxv9V-f5xC8Bvj5g.png"
     },
     {

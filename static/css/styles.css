@@ -1,0 +1,21 @@
+.deck-link {
+  display: inline-block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.deck-link img {
+    pointer-events: all;
+}
+
+.picture-row {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.picture-row img {
+  width: 20%;
+  max-width: 100px;
+  height: auto;
+}
