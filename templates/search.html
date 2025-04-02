@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Skibidi Search</title>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .getElementById("main-page")
+          .addEventListener("click", function () {
+            window.location.href = "{{ url_for('home') }}";
+          });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Find Decks</h1>
+    <button>Generate</button>
+    <button id="main-page" type="button">Home</button>
+  </body>
+</html>
