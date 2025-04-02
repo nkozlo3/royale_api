@@ -2,13 +2,19 @@
 <html>
   <head>
     <title>Skibidi Search</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <script src="{{url_for('static', filename='js/generate_meta_deck.js')}}"></script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
   </head>
   <body>
     <h1>Find Decks</h1>
-    <button>Generate</button>
+    <button id="generate-meta" type="button">Generate Meta</button>
     <button id="main-page" type="button" data-url="{{ url_for('home') }}">
       Home
     </button>
+    <div id="deck-div"></div>
   </body>
 </html>

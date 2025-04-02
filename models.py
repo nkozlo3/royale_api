@@ -16,12 +16,3 @@ class Deck(db.Model):
     cards = db.Column(db.String(255)) # comma seperated names of cards
     card_ids = db.Column(db.String(100)) # comma seperated card ids
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def add_card(self, card, cardId):
-        l = self.cards.split(',')
-        n = len(l)
-        if n < 8:
-            self.cards += "," + card if self.cards != "" else card
-            self.card_ids += "," + cardId if self.card_ids != "" else card
-        else:
-            raise ValueError("A deck can only have 8 cards.")
