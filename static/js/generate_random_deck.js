@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const link = document.createElement("link");
-
   const button = document.getElementById("generate-unique");
   const display = document.getElementById("deck-div");
 
@@ -12,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       const data = await response.json();
       const deck = data.deck;
-      console.log(deck);
+      // console.log(deck);
       display.innerHTML = `<a class=deck-link target= "_blank" href="https://link.clashroyale.com/deck/en?deck=${deck.main_condition.id};${deck.win_condition.id};${deck.damage1.id};${deck.damage2.id};${deck.defense1.id};${deck.defense2.id};${deck.small_spell.id};${deck.spell.id}">
       <div class="picture-row" id="picture-row">
         <img src="${deck.main_condition.picture_url}" alt="${deck.main_condition.name}" />
