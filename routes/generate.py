@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 
 generate_bp = Blueprint('generate', __name__)
 
@@ -10,4 +10,4 @@ it will include the cards you input
 """
 @generate_bp.route('/', methods=['GET'])
 def generate():
-    return 'Hello, bad-deck'
+    return render_template('generate.html')

@@ -2,18 +2,23 @@
 <html>
   <head>
     <title>Skibidi Main Page</title>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        document
-          .getElementById("search-page")
-          .addEventListener("click", function () {
-            window.location.href = "{{ url_for('search.search') }}";
-          });
-      });
-    </script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
   </head>
   <body>
     <h1>Generate Decks</h1>
-    <button id="search-page" type="button">Search</button>
+    <button
+      id="search-page"
+      type="button"
+      data-url="{{ url_for('search.search') }}"
+    >
+      Search
+    </button>
+    <button
+      id="generate-page"
+      type="button"
+      data-url="{{ url_for('generate.generate') }}"
+    >
+      Generate Unique
+    </button>
   </body>
 </html>
