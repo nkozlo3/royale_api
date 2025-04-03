@@ -61,3 +61,34 @@ def fetch_and_populate_cards():
         return jsonify({"message": "Cards populated successfully"}), 201
     except requests.exceptions.RequestException as e:
         return jsonify({"error": str(e)}), 500
+
+@cards_bp.route('/update', methods=['PUT'])
+def update():
+    api_key = os.environ.get("ROYALE_API_KEY")
+    url = "https://api.clashroyale.com/v1/cards"
+    headers = {"Authorization": f"Bearer {api_key}"}
+    
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        cards = data['items']
+        for card in cards:
+            curr_id = card['id']
+            hasEvolution = 0
+            try:
+                hasEvolution = card['maxEvolutionLevel']
+            except KeyError:
+                hasEvolution = 0
+                
+            if hasEvolution:
+                db_card = Card.query.get(curr_id)
+                db_card.has_evolution = True
+                icons = card['iconUrls']
+                db_card.evolution_picture_url = icons['evolutionMedium']
+                db.session.commit()
+        return jsonify({"message": "Cards updated successfully"}), 200
+    
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+        

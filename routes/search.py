@@ -23,14 +23,31 @@ as you search, it will save decks not yet seen in our database
 def search():
     return render_template('search.html')
 
+def formatNames(cards):
+    cards = re.sub(r"[.\-\s]", "", cards).lower()
+    cards = cards.replace("minipekka", "mini")
+    cards = cards.replace("megaminion", "megam")
+    cards = cards.replace("minions", "minids")
+    return cards
+
 def add_deck(deck):
     cards = ""
     card_ids = ""
+    cards_l = []
+    cards_ids_l = []
     for card in deck:
-        cards += card['name'] + ","
-        card_ids += str(card['id']) + ","
-    cards = cards[:len(cards)-1]
-    card_ids = card_ids[:len(card_ids)-1]
+        cards_l.append(card['name'])
+        cards_ids_l.append(str(card['id']))
+
+    cards = sorted(cards)
+    cards = ",".join(cards_l)
+    cards = formatNames(cards)
+    card_ids = ",".join(cards_ids_l)
+    
+    existing_deck = Deck.query.filter_by(cards=cards).first()
+    if existing_deck:
+        print(f"Deck Already Exists.")
+    
     currDeck = Deck(cards=cards, card_ids=card_ids)
     db.session.add(currDeck)
     db.session.commit()
@@ -81,28 +98,19 @@ def update_decks():
 
 @search_bp.route('/update-meta-decks', methods=['POST'])
 def update_meta_decks():
-    lock_acquired = False
     try:
         with open(LOCK_FILE, "w") as lock_file:
             fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            lock_acquired = True
             return update_decks()
     except BlockingIOError:
         return jsonify({
             "message": "Another process is updating the database. Please wait."
         }), 409
-    
-    finally:
-        if lock_acquired:
-            fcntl.flock(lock_file, fcntl.LOCK_UN)
 
 @search_bp.route('/fetch-meta-decks', methods=['GET'])
 def generate_and_fetch_meta_deck():
     query = request.args.get('query', '').strip()
-    query = re.sub(r"[.\-\s]", "", query).lower()
-    query = query.replace("minipekka", "mini")
-    query = query.replace("megaminion", "megam")
-    query = query.replace("minions", "minids")
+    query = formatNames(query)
     query = query.split(",")
     
     two_months_ago = datetime.utcnow() - timedelta(days=60)
@@ -139,6 +147,10 @@ def generate_and_fetch_meta_deck():
     for id in card_ids:
         card = Card.query.get(id)
         picture_urls.append(card.picture_url)
+    card1 = Card.query.get(card_ids[0])
+    card2 = Card.query.get(card_ids[1])
+    picture_urls[0] = card1.evolution_picture_url if card1.has_evolution else picture_urls[0]
+    picture_urls[1] = card2.evolution_picture_url if card2.has_evolution else picture_urls[1]
 
     return jsonify({
         "deck" : {
