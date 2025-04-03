@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&display=swap"
+      rel="stylesheet"
+    />
     <title>Skibidi Search</title>
     <link
       rel="stylesheet"
@@ -10,16 +16,21 @@
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
   </head>
   <body>
-    <h1>Find Decks</h1>
-    <input
-      type="text"
-      id="search-input"
-      placeholder="Optionally enter card names (comma-seperated)"
-    />
-    <button id="generate-meta" type="button">Generate Meta</button>
-    <button id="main-page" type="button" data-url="{{ url_for('home') }}">
-      Home
-    </button>
-    <div id="deck-div"></div>
+    <div class="bg-image"></div>
+    <div class="bg-text">
+      <h1 class="bangers-regular">Generate Random Current Meta Decks</h1>
+      <div class="input-wrapper">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Optionally enter card names (comma-seperated)"
+      />
+    </div>
+      <button class="bangers-regular" id="generate-meta" type="button">Generate Meta</button>
+      <button class="bangers-regular" id="main-page" type="button" data-url="{{ url_for('home') }}">
+        Home
+      </button>
+      <div id="deck-div"></div>
+    </div>
   </body>
 </html>
