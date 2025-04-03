@@ -107,6 +107,29 @@ def update_meta_decks():
             "message": "Another process is updating the database. Please wait."
         }), 409
 
+def get_deck_lists(decks):
+    card_ids_lists = []
+    card_names_lists = []
+    picture_urls_lists = []
+    
+    for deck in decks:
+        card_ids = deck.card_ids.split(',')
+        card_names = deck.cards.split(',')
+        picture_urls = []
+        for id in card_ids:
+            card = Card.query.get(id)
+            picture_urls.append(card.picture_url)
+        card1 = Card.query.get(card_ids[0])
+        card2 = Card.query.get(card_ids[1])
+        picture_urls[0] = card1.evolution_picture_url if card1.has_evolution else picture_urls[0]
+        picture_urls[1] = card2.evolution_picture_url if card2.has_evolution else picture_urls[1]
+
+        card_ids_lists.append(card_ids)
+        card_names_lists.append(card_names)
+        picture_urls_lists.append(picture_urls)
+        
+    return card_ids_lists, card_names_lists, picture_urls_lists
+
 @search_bp.route('/fetch-meta-decks', methods=['GET'])
 def generate_and_fetch_meta_deck():
     query = request.args.get('query', '').strip()
@@ -114,14 +137,13 @@ def generate_and_fetch_meta_deck():
     query = query.split(",")
     
     two_months_ago = datetime.utcnow() - timedelta(days=60)
-
     cards = ["card1", "card2", "card3", "card4", "card5", "card6", "card7", "card8"]
 
-    deck = Deck.query.filter(
+    decks = Deck.query.filter(
         Deck.date_added >= two_months_ago,
         db.and_(*[Deck.cards.ilike(f"%{name}%") for name in query])
-    ).order_by(func.random()).first()
-    
+    ).distinct().order_by(func.random()).limit(8)
+    deck = decks[0]
     update_needed = False
     if not deck:
         deck = Deck.query.filter(Deck.date_added >= two_months_ago).first()
@@ -138,28 +160,23 @@ def generate_and_fetch_meta_deck():
         }), 200
     
     diff = datetime.utcnow() - deck.date_added
-    if diff.days >= 60:
+    if diff.days >= 30:
         update_needed = True
-    
-    card_ids = deck.card_ids.split(',')
-    card_names = deck.cards.split(',')
-    picture_urls = []
-    for id in card_ids:
-        card = Card.query.get(id)
-        picture_urls.append(card.picture_url)
-    card1 = Card.query.get(card_ids[0])
-    card2 = Card.query.get(card_ids[1])
-    picture_urls[0] = card1.evolution_picture_url if card1.has_evolution else picture_urls[0]
-    picture_urls[1] = card2.evolution_picture_url if card2.has_evolution else picture_urls[1]
+    card_ids_lists, card_names_lists, picture_urls_lists = get_deck_lists(decks)
+
+    deck_names = ["deck" + str(i) for i in range(1, len(card_ids_lists) + 1)]
 
     return jsonify({
-        "deck" : {
-            card : {
-                "picture_url": picture_urls[i],
-                "name": card_names[i],
-                "id": card_ids[i]
-            }
-            for i, card in enumerate(cards)
+            "decks" : {
+                deck_name : {
+                    card : {
+                        "picture_url": picture_urls_lists[j][i],
+                        "name": card_names_lists[j][i],
+                        "id": card_ids_lists[j][i]
+                    }
+                    for i, card in enumerate(cards)
+                }
+                for j, deck_name in enumerate(deck_names)
         },
-        "update_needed" : update_needed
+            "update_needed" : update_needed
     })

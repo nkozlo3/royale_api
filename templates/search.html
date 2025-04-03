@@ -20,14 +20,21 @@
     <div class="bg-text">
       <h1 class="bangers-regular">Generate Random Current Meta Decks</h1>
       <div class="input-wrapper">
-      <input
-        type="text"
-        id="search-input"
-        placeholder="Optionally enter card names (comma-seperated)"
-      />
-    </div>
-      <button class="bangers-regular" id="generate-meta" type="button">Generate Meta</button>
-      <button class="bangers-regular" id="main-page" type="button" data-url="{{ url_for('home') }}">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Optionally enter card names (comma-seperated)"
+        />
+      </div>
+      <button class="bangers-regular" id="generate-meta" type="button">
+        Generate Meta
+      </button>
+      <button
+        class="bangers-regular"
+        id="main-page"
+        type="button"
+        data-url="{{ url_for('home') }}"
+      >
         Home
       </button>
       <div id="deck-div"></div>

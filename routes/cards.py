@@ -91,4 +91,3 @@ def update():
     
     except requests.exceptions.RequestException as e:
         return jsonify({"error": str(e)}), 500
-        
