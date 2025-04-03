@@ -1,8 +1,8 @@
 .bg-image {
   background-image: url("https://wallpapercave.com/wp/wp2284010.jpg");
 
-  filter: blur(4px);
-  -webkit-filter: blur(4px);
+  filter: blur(0);
+  -webkit-filter: blur(0);
   position: absolute; /*position: fixed;*/
   top: 0;
   left: 0;

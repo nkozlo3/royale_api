@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", function () {
         `/search/fetch-meta-decks?query=${encodeURIComponent(query)}`
       );
       if (!response.ok) {
-        throw new Error("That didn't work. Please try again");
+        throw new Error(
+          "That didn't work. Please try again or use different cards and make sure you don't have spelling mistakes."
+        );
       }
       const data = await response.json();
       const update_needed = data.update_needed;
