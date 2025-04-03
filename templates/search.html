@@ -11,6 +11,11 @@
   </head>
   <body>
     <h1>Find Decks</h1>
+    <input
+      type="text"
+      id="search-input"
+      placeholder="Optionally enter card names (comma-seperated)"
+    />
     <button id="generate-meta" type="button">Generate Meta</button>
     <button id="main-page" type="button" data-url="{{ url_for('home') }}">
       Home

@@ -1,10 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
   const button = document.getElementById("generate-meta");
   const display = document.getElementById("deck-div");
+  const searchInput = document.getElementById("search-input");
 
   button.addEventListener("click", async () => {
     try {
-      const response = await fetch("/search/fetch-meta-decks");
+      const query = searchInput.value.trim();
+      const response = await fetch(
+        `/search/fetch-meta-decks?query=${encodeURIComponent(query)}`
+      );
       if (!response.ok) {
         throw new Error("That didn't work. Please try again");
       }
@@ -13,6 +17,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (update_needed === "URGENT") {
         display.innerHTML = `<p>${data.message}</p>`;
         await fetch("/search/update-meta-decks", { method: "POST" });
+        return;
+      }
+      if (update_needed === "BAD_USER_INPUT") {
+        display.innerHTML = `<p>${data.message}</p>`;
         return;
       }
 
@@ -39,6 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     } catch (error) {
       display.innerHTML = `<p>Error: ${error.message}</p>`;
+    } finally {
+      searchInput.value = "";
     }
   });
 });

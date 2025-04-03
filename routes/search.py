@@ -1,11 +1,15 @@
 import os
+import re
+import fcntl
 import time
 import requests
 from flask import Blueprint, request, jsonify, render_template
 from models import db, Deck, Card
 from sqlalchemy.sql.expression import func
-from datetime import datetime
+from datetime import datetime, timedelta
 import math
+
+LOCK_FILE = "/tmp/update_meta_decks.lock"
 
 search_bp = Blueprint('search', __name__)
 
@@ -77,27 +81,58 @@ def update_decks():
 
 @search_bp.route('/update-meta-decks', methods=['POST'])
 def update_meta_decks():
-    return update_decks()
+    lock_acquired = False
+    try:
+        with open(LOCK_FILE, "w") as lock_file:
+            fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            lock_acquired = True
+            return update_decks()
+    except BlockingIOError:
+        return jsonify({
+            "message": "Another process is updating the database. Please wait."
+        }), 409
+    
+    finally:
+        if lock_acquired:
+            fcntl.flock(lock_file, fcntl.LOCK_UN)
 
 @search_bp.route('/fetch-meta-decks', methods=['GET'])
 def generate_and_fetch_meta_deck():
-    cards = ["card1", "card2", "card3", "card4", "card5", "card6", "card7", "card8"]
+    query = request.args.get('query', '').strip()
+    query = re.sub(r"[.\-\s]", "", query).lower()
+    query = query.replace("minipekka", "mini")
+    query = query.replace("megaminion", "megam")
+    query = query.replace("minions", "minids")
+    query = query.split(",")
     
-    decks = Deck.query.order_by(Deck.date_added.desc()).limit(1).all()
+    two_months_ago = datetime.utcnow() - timedelta(days=60)
+
+    cards = ["card1", "card2", "card3", "card4", "card5", "card6", "card7", "card8"]
+
+    deck = Deck.query.filter(
+        Deck.date_added >= two_months_ago,
+        db.and_(*[Deck.cards.ilike(f"%{name}%") for name in query])
+    ).order_by(func.random()).first()
     
     update_needed = False
-    if decks:
-        deck = decks[0]
-        diff = datetime.utcnow() - deck.date_added
-        if diff.days >= 30:
-            update_needed = True
-    if not decks:
+    if not deck:
+        deck = Deck.query.filter(Deck.date_added >= two_months_ago).first()
+        if deck:
+            return jsonify({
+                "message": "No meta decks found that contain all your input. Please try again with different cards or make sure you don't have spelling mistakes.",
+                "update_needed":"BAD_USER_INPUT"
+            }), 200
+
+    if not deck:
         return jsonify({
-            "message": "No decks found. Updating database. Please try again in a few minutes.",
+            "message": "No decks found. Updating database. Please try again in a 10 minutes.",
             "update_needed": "URGENT"
         }), 200
     
-    deck = Deck.query.order_by(func.random()).first()
+    diff = datetime.utcnow() - deck.date_added
+    if diff.days >= 60:
+        update_needed = True
+    
     card_ids = deck.card_ids.split(',')
     card_names = deck.cards.split(',')
     picture_urls = []
