@@ -3,6 +3,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const display = document.getElementById("deck-div");
   const searchInput = document.getElementById("search-input");
 
+  searchInput.addEventListener("keydown", function (event) {
+    console.log(event.key);
+    if (event.key === "Enter") {
+      event.preventDefault();
+      button.click();
+    }
+  });
+
   button.addEventListener("click", async () => {
     try {
       const query = searchInput.value.trim();
@@ -47,8 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     } catch (error) {
       display.innerHTML = `<p>Error: ${error.message}</p>`;
-    } finally {
-      searchInput.value = "";
     }
   });
 });
