@@ -33,8 +33,8 @@ def generate_deck():
         ids.add(curr.id)
         
     return jsonify({
-        "deck": {
-            cond: {
+        "deck" : {
+            cond : {
                 "picture_url": deck[cond].picture_url,
                 "name": deck[cond].name,
                 "id": deck[cond].id

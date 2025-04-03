@@ -24,8 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <img src="${deck.spell.picture_url}" alt="${deck.spell.name}" />
         <img src="${deck.small_spell.picture_url}" alt="${deck.small_spell.name}" />
       </div>
-      </a>
-      `;
+      </a>`;
     } catch (error) {
       display.innerHTML = `<p>Error:  ${error.message}</p>`;
     }

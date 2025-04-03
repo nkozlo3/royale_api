@@ -2,7 +2,8 @@ import os
 import time
 import requests
 from flask import Blueprint, request, jsonify, render_template
-from models import db, Deck
+from models import db, Deck, Card
+from sqlalchemy.sql.expression import func
 from datetime import datetime
 import math
 
@@ -38,7 +39,8 @@ def populate_decks(data):
     for player in players:
         tag = player['tag']
         tag = tag.replace("#", "%23")
-        time.sleep(1)
+        if done % 10 == 0:
+            time.sleep(2)
         api_key = os.environ.get("ROYALE_API_KEY")
         url = f"https://api.clashroyale.com/v1/players/{tag}"
         headers = {"Authorization": f"Bearer {api_key}"}
@@ -79,7 +81,9 @@ def update_meta_decks():
 
 @search_bp.route('/fetch-meta-decks', methods=['GET'])
 def generate_and_fetch_meta_deck():
-    decks = Deck.query.order_by(Deck.date_added.desc()).limit(5).all()
+    cards = ["card1", "card2", "card3", "card4", "card5", "card6", "card7", "card8"]
+    
+    decks = Deck.query.order_by(Deck.date_added.desc()).limit(1).all()
     
     update_needed = False
     if decks:
@@ -92,6 +96,23 @@ def generate_and_fetch_meta_deck():
             "message": "No decks found. Updating database. Please try again in a few minutes.",
             "update_needed": "URGENT"
         }), 200
-    # print("retard")
-    # print(decks)
     
+    deck = Deck.query.order_by(func.random()).first()
+    card_ids = deck.card_ids.split(',')
+    card_names = deck.cards.split(',')
+    picture_urls = []
+    for id in card_ids:
+        card = Card.query.get(id)
+        picture_urls.append(card.picture_url)
+
+    return jsonify({
+        "deck" : {
+            card : {
+                "picture_url": picture_urls[i],
+                "name": card_names[i],
+                "id": card_ids[i]
+            }
+            for i, card in enumerate(cards)
+        },
+        "update_needed" : update_needed
+    })
