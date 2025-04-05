@@ -1,3 +1,4 @@
 .env
 mydata.sql
 postgres_dump.sql
+/routes/__pycache__/*
