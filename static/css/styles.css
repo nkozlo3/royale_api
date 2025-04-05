@@ -1,6 +1,4 @@
 .bg-image {
-  background-image: url("https://wallpapercave.com/wp/wp2284010.jpg");
-
   filter: blur(0);
   -webkit-filter: blur(0);
   position: absolute; /*position: fixed;*/
@@ -27,9 +25,27 @@
   font-style: normal;
 }
 
+.cButton {
+  border: none;
+  padding: 1rem 2rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  font-size: 1rem;
+  margin: 0.5rem 0.5rem;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  background-color: #f8f4e3;
+  border: 2px solid #8b5e3c;
+}
+
+.cButton:hover {
+  background-color: royalblue;
+}
+
 .input-wrapper input {
-  background-color: #f8f4e3; /* parchment-style background */
-  border: 4px solid #8b5e3c; /* wood-brown border */
+  background-color: #f8f4e3;
+  border: 4px solid #8b5e3c;
   padding: 0.75rem 1rem;
   font-size: 1.2rem;
   font-family: "Poppins", sans-serif;
@@ -79,3 +95,26 @@
   max-width: 100px;
   height: auto;
 }
+
+.empty-card {
+  padding: 0.4rem;
+  box-sizing: border-box;
+}
+
+/* .empty-slot {
+  width: 4rem;
+  height: 6rem;
+  border: 2px dashed #fff;
+  background-color: royalblue;
+  display: flex;
+  justify-content: center;  
+  align-items: center;        
+  position: relative;
+  margin: 0.5rem 0.5rem;
+}
+
+.plus-sign {
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+} */

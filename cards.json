@@ -51,7 +51,7 @@
     },
     {
         "id": 26000005,
-        "name": "minions",
+        "name": "minids",
         "rarity": "common",
         "elixir": 3,
         "classification": "defense,damage",
@@ -181,7 +181,7 @@
     },
     {
         "id": 26000018,
-        "name": "minipekka",
+        "name": "mini",
         "rarity": "rare",
         "elixir": 4,
         "classification": "damage,support,defense",
@@ -201,7 +201,7 @@
     },
     {
         "id": 26000020,
-        "name": "giantskeleton",
+        "name": "giaskele",
         "rarity": "epic",
         "elixir": 6,
         "classification": "main-condition",
@@ -231,7 +231,7 @@
     },
     {
         "id": 26000023,
-        "name": "icewizard",
+        "name": "icewiz",
         "rarity": "legendary",
         "elixir": 3,
         "classification": "support,defense,defense",
@@ -241,7 +241,7 @@
     },
     {
         "id": 26000024,
-        "name": "royalgiant",
+        "name": "royg",
         "rarity": "common",
         "elixir": 6,
         "classification": "main-condition",
@@ -391,7 +391,7 @@
     },
     {
         "id": 26000039,
-        "name": "megaminion",
+        "name": "megam",
         "rarity": "rare",
         "elixir": 3,
         "classification": "damage,defense",
@@ -421,7 +421,7 @@
     },
     {
         "id": 26000042,
-        "name": "electrowizard",
+        "name": "electrow",
         "rarity": "legendary",
         "elixir": 4,
         "classification": "defense,support,defense",
@@ -551,7 +551,7 @@
     },
     {
         "id": 26000055,
-        "name": "megaknight",
+        "name": "megakn",
         "rarity": "legendary",
         "elixir": 7,
         "classification": "main-condition",
@@ -601,7 +601,7 @@
     },
     {
         "id": 26000060,
-        "name": "goblingiant",
+        "name": "gobant",
         "rarity": "epic",
         "elixir": 6,
         "classification": "main-condition",
@@ -701,7 +701,7 @@
     },
     {
         "id": 26000074,
-        "name": "goldenknight",
+        "name": "goldkn",
         "rarity": "champion",
         "elixir": 4,
         "classification": "damage",
@@ -751,7 +751,7 @@
     },
     {
         "id": 26000085,
-        "name": "electrogiant",
+        "name": "elecg",
         "rarity": "epic",
         "elixir": 7,
         "classification": "main-condition",
@@ -821,7 +821,7 @@
     },
     {
         "id": 26000101,
-        "name": "runegiant",
+        "name": "runeg",
         "rarity": "epic",
         "elixir": 4,
         "classification": "win-condition",
@@ -1141,7 +1141,7 @@
     },
     {
         "id": 28000017,
-        "name": "giantsnowball",
+        "name": "gisnowball",
         "rarity": "common",
         "elixir": 2,
         "classification": "small-spell",

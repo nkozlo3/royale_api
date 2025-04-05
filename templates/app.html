@@ -2,23 +2,43 @@
 <html>
   <head>
     <title>Skibidi Main Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
   </head>
   <body>
-    <h1>Generate Decks</h1>
-    <button
-      id="search-page"
-      type="button"
-      data-url="{{ url_for('search.search') }}"
-    >
-      Generate Meta
-    </button>
-    <button
-      id="generate-page"
-      type="button"
-      data-url="{{ url_for('generate.generate') }}"
-    >
-      Generate Random
-    </button>
+    <div
+      class="bg-image"
+      style="
+        background-image: url('https://wallpapercave.com/wp/wp2394960.jpg');
+      "
+    ></div>
+    <div class="bg-text">
+      <h1 class="bangers-regular">Clash Royale Deck Creator</h1>
+      <button
+        class="cButton"
+        id="search-page"
+        type="button"
+        data-url="{{ url_for('search.search') }}"
+      >
+        Generate Meta
+      </button>
+      <button
+        class="cButton"
+        id="war_decks-page"
+        type="button"
+        data-url="{{ url_for('war_decks.war_decks') }}"
+      >
+        Finish Your War Decks
+      </button>
+    </div>
   </body>
 </html>

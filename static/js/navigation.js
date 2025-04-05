@@ -10,6 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   addNavigation("search-page");
-  addNavigation("generate-page");
+  addNavigation("war_decks-page");
   addNavigation("main-page");
 });

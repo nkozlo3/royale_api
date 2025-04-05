@@ -22,11 +22,18 @@ as you search, it will save decks not yet seen in our database
 def search():
     return render_template('search.html')
 
+def make_unique(cards):
+    toReplace = ["minipekka", "megaminion", "minions", "giantskeleton", "electrogiant", "giantsnowball", "electrowizard", "icewizard", "royalgiant", "goblingiant", "runegiant", "megaknight", "goldenknight"]
+    replaceWith = ["mini", "megam", "minids", "giaskele", "elecg", "gisnowball", "electrow", "icewiz", "royg", "gobant", "runeg", "megakn", "goldkn"]
+    
+    for toChange, change in zip(toReplace, replaceWith):
+        cards = cards.replace(toChange, change)
+    
+    return cards
+
 def formatNames(cards):
     cards = re.sub(r"[.\-\s]", "", cards).lower()
-    cards = cards.replace("minipekka", "mini")
-    cards = cards.replace("megaminion", "megam")
-    cards = cards.replace("minions", "minids")
+    cards = make_unique(cards)
     return cards
 
 def add_deck(deck):
@@ -133,13 +140,17 @@ def generate_and_fetch_meta_deck():
     query = request.args.get('query', '').strip()
     query = formatNames(query)
     query = query.split(",")
+    contains = [q for q in query if q and q[0] != '!']
+    notContains = [q[1:] for q in query if q and q[0] == '!']
+    
     
     two_months_ago = datetime.utcnow() - timedelta(days=60)
     cards = ["card1", "card2", "card3", "card4", "card5", "card6", "card7", "card8"]
 
     decks = Deck.query.filter(
         Deck.date_added >= two_months_ago,
-        db.and_(*[Deck.cards.ilike(f"%{name}%") for name in query])
+        db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
+        db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
     ).distinct().order_by(func.random()).limit(8)
     deck = decks[0]
     update_needed = False
