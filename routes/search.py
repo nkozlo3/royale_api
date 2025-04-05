@@ -7,7 +7,6 @@ from flask import Blueprint, request, jsonify, render_template
 from models import db, Deck, Card
 from sqlalchemy.sql.expression import func
 from datetime import datetime, timedelta
-import math
 
 LOCK_FILE = "/tmp/update_meta_decks.lock"
 
@@ -78,7 +77,6 @@ def populate_decks(data):
         done += 1
 
 
-        
 
 def update_decks():
     api_key = os.environ.get("ROYALE_API_KEY")

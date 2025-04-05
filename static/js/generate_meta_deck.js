@@ -3,6 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const display = document.getElementById("deck-div");
   const searchInput = document.getElementById("search-input");
 
+  window.onload = function () {
+    button.click();
+  };
+
   searchInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
       event.preventDefault();
