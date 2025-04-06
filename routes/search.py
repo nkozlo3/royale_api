@@ -53,6 +53,7 @@ def add_deck(deck):
     existing_deck = Deck.query.filter_by(cards=cards).first()
     if existing_deck:
         print(f"Deck Already Exists.")
+        return
     
     currDeck = Deck(cards=cards, card_ids=card_ids)
     db.session.add(currDeck)
@@ -146,29 +147,34 @@ def generate_and_fetch_meta_deck():
     
     two_months_ago = datetime.utcnow() - timedelta(days=60)
     cards = ["card1", "card2", "card3", "card4", "card5", "card6", "card7", "card8"]
-
+    toCheck = Deck.query.filter(
+        Deck.date_added >= two_months_ago,
+        db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
+        db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
+    ).distinct().order_by(func.random()).first()
+    
     decks = Deck.query.filter(
         Deck.date_added >= two_months_ago,
         db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
         db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
     ).distinct().order_by(func.random()).limit(8)
-    deck = decks[0]
+
     update_needed = False
-    if not deck:
-        deck = Deck.query.filter(Deck.date_added >= two_months_ago).first()
-        if deck:
+    if not toCheck:
+        toCheck = Deck.query.filter(Deck.date_added >= two_months_ago).first()
+        if toCheck:
             return jsonify({
                 "message": "No meta decks found that contain all your input. Please try again with different cards or make sure you don't have spelling mistakes.",
                 "update_needed":"BAD_USER_INPUT"
             }), 200
 
-    if not deck:
+    if not toCheck:
         return jsonify({
             "message": "No decks found. Updating database. Please try again in a 10 minutes.",
             "update_needed": "URGENT"
         }), 200
-    
-    diff = datetime.utcnow() - deck.date_added
+
+    diff = datetime.utcnow() - toCheck.date_added
     if diff.days >= 30:
         update_needed = True
     card_ids_lists, card_names_lists, picture_urls_lists = get_deck_lists(decks)
