@@ -47,3 +47,23 @@ def generate_cards_json():
         json.dump(cards_list, json_file, indent=4)
         
     return jsonify({"message": f"Cards saved to {output_file}"})
+
+@helper_bp.route('/cards-by-rarity', methods=['GET'])
+def cards_by_rarity():
+    rarity = request.args.get('query', '').strip()
+    
+    cards = Card.query.filter_by(rarity=rarity)
+    
+    
+    
+    return jsonify({
+        "cards": {
+            card.name : {
+                "rarity" : card.rarity,
+                "elixir" : card.elixir,
+                "id" : card.id,
+                "picture_url" : card.picture_url
+            }
+            for card in cards
+        }
+    }), 200

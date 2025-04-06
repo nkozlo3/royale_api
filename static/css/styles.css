@@ -1,7 +1,7 @@
 .bg-image {
   filter: blur(0);
   -webkit-filter: blur(0);
-  position: absolute; /*position: fixed;*/
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -101,20 +101,6 @@
   box-sizing: border-box;
 }
 
-/* .empty-slot {
-  width: 4rem;
-  height: 6rem;
-  border: 2px dashed #fff;
-  background-color: royalblue;
-  display: flex;
-  justify-content: center;  
-  align-items: center;        
-  position: relative;
-  margin: 0.5rem 0.5rem;
+#select-card {
+  display: none;
 }
-
-.plus-sign {
-  color: #fff;
-  font-size: 2rem;
-  line-height: 1;
-} */

@@ -16,30 +16,79 @@
     <script src="{{ url_for('static', filename='js/war_decks.js') }}"></script>
   </head>
   <body>
-    <div
-      class="bg-image"
-      style="
-        background-image: url('https://wallpapercave.com/wp/wp2394959.jpg');
-      "
-    ></div>
-    <div class="bg-text">
-      <h1 class="bangers-regular">Finish Your War Decks</h1>
-      <button
-        class="bangers-regular cButton"
-        id="generate-war-decks"
-        type="button"
-      >
-        Complete War Decks
-      </button>
-      <button
-        class="bangers-regular cButton"
-        id="main-page"
-        type="button"
-        data-url="{{ url_for('home') }}"
-      >
-        Home
-      </button>
-      <div id="war-decks-div"></div>
+    <div id="main-war-decks">
+      <div
+        class="bg-image"
+        style="
+          background-image: url('https://wallpapercave.com/wp/wp2394959.jpg');
+        "
+      ></div>
+      <div class="bg-text">
+        <h1 class="bangers-regular">Finish Your War Decks</h1>
+        <button
+          class="bangers-regular cButton"
+          id="generate-war-decks"
+          type="button"
+        >
+          Complete War Decks
+        </button>
+        <button
+          class="bangers-regular cButton"
+          id="main-page"
+          type="button"
+          data-url="{{ url_for('home') }}"
+        >
+          Home
+        </button>
+        <div id="war-decks-div"></div>
+      </div>
+    </div>
+    <div id="select-card">
+      <div
+        class="bg-image"
+        style="
+          background-image: url('https://wallpapercave.com/wp/wp4898020.jpg');
+        "
+      ></div>
+      <div class="bg-text">
+        <button
+          class="bangers-regular cButton"
+          id="common-button"
+          type="button"
+        >
+          Common
+        </button>
+        <button class="bangers-regular cButton" id="rare-button" type="button">
+          Rare
+        </button>
+        <button class="bangers-regular cButton" id="epic-button" type="button">
+          Epic
+        </button>
+        <button
+          class="bangers-regular cButton"
+          id="legendary-button"
+          type="button"
+        >
+          Legendary
+        </button>
+        <button
+          class="bangers-regular cButton"
+          id="champion-button"
+          type="button"
+        >
+          Champion
+        </button>
+
+        <div id="cards-display"></div>
+
+        <button
+          class="bangers-regular cButton"
+          id="cancel-card-button"
+          type="button"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   </body>
 </html>
