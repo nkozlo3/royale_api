@@ -12,11 +12,17 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
+    <script src="{{url_for('static', filename='js/fill_in_suggestions.js')}}"></script>
     <script src="{{url_for('static', filename='js/generate_meta_deck.js')}}"></script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
   </head>
   <body>
-    <div class="bg-image" style="background-image: url('https://wallpapercave.com/wp/wp2394965.jpg');"></div>
+    <div
+      class="bg-image"
+      style="
+        background-image: url('https://wallpapercave.com/wp/wp2394965.jpg');
+      "
+    ></div>
     <div class="bg-text">
       <h1 class="bangers-regular">Generate Random Current Meta Decks</h1>
       <div class="input-wrapper">

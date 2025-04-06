@@ -13,6 +13,7 @@
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{url_for('static', filename='js/fill_in_suggestions.js')}}"></script>
     <script src="{{ url_for('static', filename='js/war_decks.js') }}"></script>
   </head>
   <body>
@@ -41,8 +42,10 @@
           Home
         </button>
         <div id="war-decks-div"></div>
+        <div id="war-decks-suggestions"></div>
       </div>
     </div>
+
     <div id="select-card">
       <div
         class="bg-image"
@@ -81,13 +84,22 @@
 
         <div id="cards-display"></div>
 
-        <button
-          class="bangers-regular cButton"
-          id="cancel-card-button"
-          type="button"
-        >
-          Cancel
-        </button>
+        <div id="other-buttons">
+          <button
+            class="bangers-regular cButton"
+            id="cancel-card-button"
+            type="button"
+          >
+            Cancel
+          </button>
+          <button
+            class="bangers-regular cButton"
+            id="remove-slot"
+            type="button"
+          >
+            Clear Slot
+          </button>
+        </div>
       </div>
     </div>
   </body>

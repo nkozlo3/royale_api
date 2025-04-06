@@ -1,13 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
   const button = document.getElementById("generate-war-decks");
+  const cancel = document.getElementById("cancel-card-button");
+  const clear_slot = document.getElementById("remove-slot");
+
   const display = document.getElementById("war-decks-div");
   const main_war_decks = document.getElementById("main-war-decks");
   const select_card = document.getElementById("select-card");
-  const cancel = document.getElementById("cancel-card-button");
   let currCardId = "";
   const cardsSet = new Set();
 
   const cards_display = document.getElementById("cards-display");
+  const war_decks_suggestions_display = document.getElementById(
+    "war-decks-suggestions"
+  );
 
   const card_type_buttons = ["common", "rare", "epic", "legendary", "champion"];
 
@@ -53,6 +58,8 @@ document.addEventListener("DOMContentLoaded", function () {
     currCard.src = src;
     currCard.alt = cardName;
     cardsSet.add("!" + cardName);
+    let addToStorage = cardName + "," + src;
+    localStorage.setItem(currCardId, addToStorage);
     bringBackMain();
   }
 
@@ -63,6 +70,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   cancel.addEventListener("click", async () => {
     bringBackMain();
+  });
+  clear_slot.addEventListener("click", async () => {
+    localStorage.removeItem(currCardId);
+    bringBackMain();
+    window.location.reload();
   });
 
   window.removeMainSelectCard = removeMainSelectCard;
@@ -80,16 +92,24 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       html += `<div class="deck">`;
       for (let j = 0; j < 8; j++) {
+        let currItem = `deck${i + 1}-card${j + 1}`;
+        const potential = localStorage.getItem(currItem);
+        let src = `${urls[0]}`;
+        if (potential !== null) {
+          const items = potential.split(",");
+          cardsSet.add("!" + items[0]);
+          src = items[1];
+        }
         if (j === 0 || j === 4) {
           html += `<div class="picture-row" id="picture-row">`;
         }
         html += `
         <img
           class="empty-card"
-          onclick="removeMainSelectCard('deck${i + 1}-card${j + 1}')"
-          src="${urls[0]}"
-          alt="deck${i + 1}-card${j + 1}"
-          id="deck${i + 1}-card${j + 1}"
+          onclick="removeMainSelectCard('${currItem}')"
+          src="${src}"
+          alt="${currItem}"
+          id="${currItem}"
         />
         `;
         if (j === 3 || j == 7) {
@@ -128,4 +148,12 @@ document.addEventListener("DOMContentLoaded", function () {
     html = generateInnerHTML(urls, ids);
     display.innerHTML = html;
   };
+
+  button.addEventListener("click", async () => {
+    let query = "";
+    cardsSet.forEach((element) => {
+      query += element + ",";
+    });
+    window.fillInSuggestions(war_decks_suggestions_display, query);
+  });
 });
