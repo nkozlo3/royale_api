@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const button = document.getElementById("generate-war-decks");
   const cancel = document.getElementById("cancel-card-button");
   const clear_slot = document.getElementById("remove-slot");
+  const searchInput = document.getElementById("search-input");
 
   const display = document.getElementById("war-decks-div");
   const main_war_decks = document.getElementById("main-war-decks");
@@ -149,11 +150,20 @@ document.addEventListener("DOMContentLoaded", function () {
     display.innerHTML = html;
   };
 
+  searchInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      button.click();
+    }
+  });
+
   button.addEventListener("click", async () => {
     let query = "";
     cardsSet.forEach((element) => {
       query += element + ",";
     });
+    const wanted_cards = searchInput.value.trim();
+    query += wanted_cards;
     window.fillInSuggestions(war_decks_suggestions_display, query);
   });
 });
