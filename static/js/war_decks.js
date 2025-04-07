@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let card_html = `<div class="picture-row id="picture-row">`;
 
     Object.entries(cards).forEach(([cardName, card]) => {
-      card_html += `<img onclick="bringBackMainAndSetUpCard('${card.picture_url}', '${cardName}')" src="${card.picture_url}" alt="${cardName}" />`;
+      card_html += `<img onclick="bringBackMainAndSetUpCard('${card.picture_url}', '${cardName}${card.id}')" src="${card.picture_url}" alt="${cardName}" />`;
     });
     card_html += `</div>`;
     cards_display.innerHTML = card_html;
@@ -83,6 +83,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function bringBackMainAndSetUpCard(src, cardName) {
+    console.log("card name belwo");
+    console.log(cardName);
     saveCard(src, cardName, currCardId);
     bringBackMain();
   }
@@ -125,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let currItem = `deck${i + 1}-card${j + 1}`;
         const potential = localStorage.getItem(currItem);
         let src = `${urls[0]}`;
-        let alt = `${currItem}`;
+        let alt = `${currItem}00000000`;
         if (potential !== null) {
           const items = potential.split(",");
           cardsSet.add("!" + items[0]);
@@ -148,6 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
           html += `</div>`;
         }
       }
+      html += `<div id=deck${i + 1}-not-found></div>`;
       html += `</div>`; // closes <div class="deck">
       html += `
             <div class="deck-buttons">
@@ -212,43 +215,57 @@ document.addEventListener("DOMContentLoaded", function () {
           const currDeck = await document.getElementById(currDeckId);
           let alts = [];
 
+          errorDisp = document.getElementById(currDeckId + "-not-found");
+          errorDisp.innerHTML = ``;
+
           for (row of currDeck.querySelectorAll(".picture-row")) {
             for (potential of row.querySelectorAll(".empty-card")) {
               potentialAlt = potential.getAttribute("alt");
+              let originalName = potentialAlt.replace(/\d{8}$/, "");
               const checker = potentialAlt.substring(0, 4);
               if (checker !== "deck") {
-                alts.push(potentialAlt);
+                alts.push(originalName);
               }
             }
           }
 
           let query = "";
           cardsSet.forEach((card) => {
-            query += card + ",";
+            const originalName = card.replace(/\d{8}$/, "");
+            query += originalName + ",";
           });
-
           const wanted_cards = element.value.trim();
           query += wanted_cards;
           let queries = query.split(",");
-
           for (alt of alts) {
-            const checker = "!" + alt;
+            let originalName = alt.replace(/\d{8}$/, "");
+            const checker = "!" + originalName;
             queries = queries.filter((q) => q.trim() !== checker);
-            queries.push(alt);
+            queries.push(originalName);
           }
+
+          console.log("OOGA BOOGA");
           query = queries.join(",");
+          console.log("query below: ");
+          console.log(query);
 
           const deck_in_html = await window.fillInSuggestions(query, ",1");
           const parser = new DOMParser();
           const doc = parser.parseFromString(deck_in_html, "text/html");
           const linkElement = doc.querySelector("a.deck-link");
+          if (linkElement === null) {
+            console.log("THIS IS WORKINGISH");
+            errorDisp.innerHTML = `<b style="color: red"> No decks available with these cards. </b>`;
+            return;
+          }
           const href = linkElement ? linkElement.href : null;
 
           const images = doc.querySelectorAll("img");
           const imageSrcs = Array.from(images).map((img) => img.src);
 
-          const names = Array.from(images).map((n) => n.alt);
-
+          let names = Array.from(images).map((n) => n.alt);
+          console.log("names below: ");
+          console.log(names);
           let i = 0;
           for (row of currDeck.querySelectorAll(".picture-row")) {
             for (card of row.querySelectorAll(".empty-card")) {
@@ -263,16 +280,22 @@ document.addEventListener("DOMContentLoaded", function () {
     for (const copy_button_id of copy_button_ids) {
       copy_button = document.getElementById(copy_button_id);
       copy_button.addEventListener("click", async function (event) {
-        const deck = document.getElementById(copy_button_id.substring(0, 4));
-        console.log(deck);
-        
+        const deck = document.getElementById(copy_button_id.substring(0, 5));
+        let cards = [];
+        for (row of deck.querySelectorAll(".picture-row")) {
+          for (potential of row.querySelectorAll(".empty-card")) {
+            const cardName = potential.getAttribute("alt");
+            console.log(cardName);
+          }
+        }
+
         let ids = [];
-        
+
         event.preventDefault();
-        window.open(
-          `https://link.clashroyale.com/deck/en?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}`,
-          "_blank"
-        );
+        // window.open(
+        //   `https://link.clashroyale.com/deck/en?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}`,
+        //   "_blank"
+        // );
       });
     }
   };
