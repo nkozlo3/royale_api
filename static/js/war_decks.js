@@ -83,8 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function bringBackMainAndSetUpCard(src, cardName) {
-    console.log("card name belwo");
-    console.log(cardName);
     saveCard(src, cardName, currCardId);
     bringBackMain();
   }
@@ -244,10 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
             queries.push(originalName);
           }
 
-          console.log("OOGA BOOGA");
           query = queries.join(",");
-          console.log("query below: ");
-          console.log(query);
 
           const deck_in_html = await window.fillInSuggestions(query, ",1");
           const parser = new DOMParser();
@@ -259,13 +254,14 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
           }
           const href = linkElement ? linkElement.href : null;
-
+          let ids = href.split("=")[1].split(";");
           const images = doc.querySelectorAll("img");
           const imageSrcs = Array.from(images).map((img) => img.src);
-
           let names = Array.from(images).map((n) => n.alt);
-          console.log("names below: ");
-          console.log(names);
+          for (let index = 0; index < 8; index++) {
+            names[index] += ids[index];
+          }
+
           let i = 0;
           for (row of currDeck.querySelectorAll(".picture-row")) {
             for (card of row.querySelectorAll(".empty-card")) {
@@ -282,20 +278,34 @@ document.addEventListener("DOMContentLoaded", function () {
       copy_button.addEventListener("click", async function (event) {
         const deck = document.getElementById(copy_button_id.substring(0, 5));
         let cards = [];
+        let ids = [];
         for (row of deck.querySelectorAll(".picture-row")) {
           for (potential of row.querySelectorAll(".empty-card")) {
             const cardName = potential.getAttribute("alt");
-            console.log(cardName);
+            ids.push(cardName.slice(-8));
           }
         }
 
-        let ids = [];
-
         event.preventDefault();
-        // window.open(
-        //   `https://link.clashroyale.com/deck/en?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}`,
-        //   "_blank"
-        // );
+        window.open(
+          `https://link.clashroyale.com/deck/en?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}`,
+          "_blank"
+        );
+      });
+    }
+
+    for (const clear_button_id of clear_button_ids) {
+      clear_button = document.getElementById(clear_button_id);
+      clear_button.addEventListener("click", async function (event) {
+        const deck = document.getElementById(clear_button_id.substring(0, 5));
+
+        for (row of deck.querySelectorAll(".picture-row")) {
+          for (potential of row.querySelectorAll(".empty-card")) {
+            const id = potential.getAttribute("id");
+            localStorage.removeItem(id);
+          }
+        }
+        window.location.reload();
       });
     }
   };
