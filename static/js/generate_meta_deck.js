@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   button.addEventListener("click", async () => {
     const query = searchInput.value.trim();
-    window.fillInSuggestions(display, query);
+    const html = await window.fillInSuggestions(query, ",8");
+    display.innerHTML = html;
   });
 });

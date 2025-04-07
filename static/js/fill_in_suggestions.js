@@ -1,5 +1,6 @@
-async function fillInSuggestions(disp, query) {
+async function fillInSuggestions(query, amount) {
   try {
+    query += amount;
     const response = await fetch(
       `/search/fetch-meta-decks?query=${encodeURIComponent(query)}`
     );
@@ -11,13 +12,13 @@ async function fillInSuggestions(disp, query) {
     const data = await response.json();
     const update_needed = data.update_needed;
     if (update_needed === "URGENT") {
-      disp.innerHTML = `<p>${data.message}</p>`;
+      const ret = `<p>${data.message}</p>`;
       await fetch("/search/update-meta-decks", { method: "POST" });
-      return;
+      return ret;
     }
     if (update_needed === "BAD_USER_INPUT") {
-      disp.innerHTML = `<p>${data.message}</p>`;
-      return;
+      const ret = `<p>${data.message}</p>`;
+      return ret;
     }
     let html = "";
 
@@ -58,15 +59,15 @@ async function fillInSuggestions(disp, query) {
       html += `</div>`;
     }
 
-    disp.innerHTML = html;
     if (update_needed === true) {
       console.log(
         "Update required. Come back in 10 minutes for more meta decks."
       );
       await fetch("/search/update-meta-decks", { method: "POST" });
     }
+    return html;
   } catch (error) {
-    disp.innerHTML = `<p>Error: ${error.message}</p>`;
+    return `<p>Error: ${error.message}</p>`;
   }
 }
 

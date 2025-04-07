@@ -139,6 +139,8 @@ def get_deck_lists(decks):
 @search_bp.route('/fetch-meta-decks', methods=['GET'])
 def generate_and_fetch_meta_deck():
     query = request.args.get('query', '').strip()
+    amount = query[len(query)-1]
+    query = query[:len(query)-1]
     query = formatNames(query)
     query = query.split(",")
     contains = [q for q in query if q and q[0] != '!']
@@ -157,7 +159,7 @@ def generate_and_fetch_meta_deck():
         Deck.date_added >= two_months_ago,
         db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
         db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
-    ).distinct().order_by(func.random()).limit(8)
+    ).distinct().order_by(func.random()).limit(amount)
 
     update_needed = False
     if not toCheck:

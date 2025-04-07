@@ -16,7 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   const card_type_buttons = ["common", "rare", "epic", "legendary", "champion"];
-
+  const deck_input_ids = [
+    "search-input-deck1",
+    "search-input-deck2",
+    "search-input-deck3",
+    "search-input-deck4",
+  ];
   for (const card_type of card_type_buttons) {
     let curr_id = card_type + "-button";
     const element = document.getElementById(curr_id);
@@ -91,7 +96,13 @@ document.addEventListener("DOMContentLoaded", function () {
       if (i === 0) {
         html += `<div class="deck-row">`;
       }
-      html += `<div class="deck">`;
+      html += `<div class="deck-input-wrapper">
+                <input
+                  type="text"
+                  id="search-input-deck${i + 1}"
+                  placeholder="Optionally enter card names (comma-seperated)"
+                />`;
+      html += `<div id="deck${i + 1}" class="deck">`;
       for (let j = 0; j < 8; j++) {
         let currItem = `deck${i + 1}-card${j + 1}`;
         const potential = localStorage.getItem(currItem);
@@ -117,7 +128,8 @@ document.addEventListener("DOMContentLoaded", function () {
           html += `</div>`;
         }
       }
-      html += `</div>`; // closes <div class = "deck">
+      html += `</div>`; // closes <div class="deck">
+      html += `</div>`; // closes <div class="deck-input-wrapper">
       if (i === 3) {
         html += `</div>`;
       }
@@ -148,6 +160,37 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
     html = generateInnerHTML(urls, ids);
     display.innerHTML = html;
+
+    for (const deck_input of deck_input_ids) {
+      const element = document.getElementById(deck_input);
+      element.addEventListener("keydown", async function (event) {
+        console.log(element);
+        if (event.key === "Enter") {
+          event.preventDefault();
+          const currDeckId = element.id.split("-").pop();
+          const currDeck = await document.getElementById(currDeckId);
+          let query = "";
+          cardsSet.forEach((card) => {
+            query += card + ",";
+          });
+          const wanted_cards = element.value.trim();
+          query += wanted_cards;
+          console.log(query);
+          const deck_in_html = await window.fillInSuggestions(query, ",1");
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(deck_in_html, "text/html");
+          const linkElement = doc.querySelector("a.deck-link");
+          const href = linkElement ? linkElement.href : null;
+
+          const images = doc.querySelectorAll("img");
+          const imageSrcs = Array.from(images).map((img) => img.src);
+
+          for (imageSrc of imageSrcs) {
+            console.log(imageSrcs[0]);
+          }
+        }
+      });
+    }
   };
 
   searchInput.addEventListener("keydown", function (event) {
@@ -164,6 +207,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     const wanted_cards = searchInput.value.trim();
     query += wanted_cards;
-    window.fillInSuggestions(war_decks_suggestions_display, query);
+    war_decks_suggestions_display.innerHTML = await window.fillInSuggestions(
+      query,
+      ",8"
+    );
   });
 });

@@ -63,6 +63,24 @@
   box-shadow: 0 0 10px #ffd700;
 }
 
+.deck-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.deck-input-wrapper input {
+  background-color: #f8f4e3;
+  border: 4px solid #8b5e3c;
+  padding: 0.25rem 1rem;
+  font-family: "Poppins", sans-serif;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.3);
+  color: #2c1b0c;
+  outline: none;
+  transition: 0.2s;
+}
+
 .deck {
   box-sizing: border-box;
   display: inline-flex;
@@ -83,6 +101,14 @@
 
 .deck-link img {
   pointer-events: all;
+}
+
+.deck-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .picture-row {
