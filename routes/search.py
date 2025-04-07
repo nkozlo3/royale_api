@@ -23,8 +23,8 @@ def search():
     return render_template('search.html')
 
 def make_unique(cards):
-    toReplace = ["minipekka", "megaminion", "minions", "giantskeleton", "electrogiant", "giantsnowball", "electrowizard", "icewizard", "royalgiant", "goblingiant", "runegiant", "megaknight", "goldenknight"]
-    replaceWith = ["mini", "megam", "minids", "giaskele", "elecg", "gisnowball", "electrow", "icewiz", "royg", "gobant", "runeg", "megakn", "goldkn"]
+    toReplace = ["minipekka", "megaminion", "minions", "giantskeleton", "electrogiant", "giantsnowball", "electrowizard", "icewizard", "royalgiant", "goblingiant", "runegiant", "megaknight", "goldenknight", "bossbandit"]
+    replaceWith = ["mini", "megam", "minids", "giaskele", "elecg", "gisnowball", "electrow", "icewiz", "royg", "gobant", "runeg", "megakn", "goldkn", "bossandit"]
     
     for toChange, change in zip(toReplace, replaceWith):
         cards = cards.replace(toChange, change)

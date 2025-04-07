@@ -1,9 +1,24 @@
 import os
+import re
 import requests
 from flask import Blueprint, request, jsonify
 from models import db, Card
 
 cards_bp = Blueprint('cards', __name__)
+
+def make_unique(cards):
+    toReplace = ["minipekka", "megaminion", "minions", "giantskeleton", "electrogiant", "giantsnowball", "electrowizard", "icewizard", "royalgiant", "goblingiant", "runegiant", "megaknight", "goldenknight", "bossbandit"]
+    replaceWith = ["mini", "megam", "minids", "giaskele", "elecg", "gisnowball", "electrow", "icewiz", "royg", "gobant", "runeg", "megakn", "goldkn", "bossandit"]
+    
+    for toChange, change in zip(toReplace, replaceWith):
+        cards = cards.replace(toChange, change)
+    
+    return cards
+
+def formatNames(cards):
+    cards = re.sub(r"[.\-\s]", "", cards).lower()
+    cards = make_unique(cards)
+    return cards
 
 """
 This populates our cards
@@ -17,9 +32,9 @@ def populate_cards(data):
 
         icons = card['iconUrls']
         picUrl = icons['medium']
-        print(card['name'])
+        print(formatNames(card['name']))
         classifications = input("Please input the classifications for this card, CSV, from (damage, main-condition, win-condition, small-spell, spell, building, spawner, defense): ")
-        curr = Card(id=card['id'],name=card['name'],rarity=card['rarity'],elixir=elixirCost,classification=classifications,picture_url=picUrl)
+        curr = Card(id=card['id'],name=formatNames(card['name']),rarity=card['rarity'],elixir=elixirCost,classification=classifications,picture_url=picUrl)
         db.session.add(curr)
         db.session.commit()
         
