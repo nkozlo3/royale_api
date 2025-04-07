@@ -22,6 +22,18 @@ document.addEventListener("DOMContentLoaded", function () {
     "search-input-deck3",
     "search-input-deck4",
   ];
+  const copy_button_ids = [
+    "deck1-copy-button",
+    "deck2-copy-button",
+    "deck3-copy-button",
+    "deck4-copy-button",
+  ];
+  const clear_button_ids = [
+    "deck1-clear-button",
+    "deck2-clear-button",
+    "deck3-clear-button",
+    "deck4-clear-button",
+  ];
   for (const card_type of card_type_buttons) {
     let curr_id = card_type + "-button";
     const element = document.getElementById(curr_id);
@@ -59,13 +71,19 @@ document.addEventListener("DOMContentLoaded", function () {
     currCardId = buttonId;
   }
 
-  async function bringBackMainAndSetUpCard(src, cardName) {
-    currCard = document.getElementById(currCardId);
+  async function saveCard(src, cardName, cardID) {
+    const currCard = document.getElementById(cardID);
     currCard.src = src;
     currCard.alt = cardName;
-    cardsSet.add("!" + cardName);
+    if (!cardsSet.has("!" + cardName)) {
+      cardsSet.add("!" + cardName);
+    }
     let addToStorage = cardName + "," + src;
-    localStorage.setItem(currCardId, addToStorage);
+    localStorage.setItem(cardID, addToStorage);
+  }
+
+  async function bringBackMainAndSetUpCard(src, cardName) {
+    saveCard(src, cardName, currCardId);
     bringBackMain();
   }
 
@@ -107,10 +125,12 @@ document.addEventListener("DOMContentLoaded", function () {
         let currItem = `deck${i + 1}-card${j + 1}`;
         const potential = localStorage.getItem(currItem);
         let src = `${urls[0]}`;
+        let alt = `${currItem}`;
         if (potential !== null) {
           const items = potential.split(",");
           cardsSet.add("!" + items[0]);
           src = items[1];
+          alt = items[0];
         }
         if (j === 0 || j === 4) {
           html += `<div class="picture-row" id="picture-row">`;
@@ -120,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
           class="empty-card"
           onclick="removeMainSelectCard('${currItem}')"
           src="${src}"
-          alt="${currItem}"
+          alt="${alt}"
           id="${currItem}"
         />
         `;
@@ -129,6 +149,27 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
       html += `</div>`; // closes <div class="deck">
+      html += `
+            <div class="deck-buttons">
+              <button
+                  class="bangers-regular cButton"
+                  id="deck${i + 1}-copy-button"
+                  style="padding: 0.5rem 1rem"
+                  target="_blank"
+                  href=""
+                  type="button"
+                >
+                  Copy Deck
+                </button>
+              <button
+                class="bangers-regular cButton"
+                id="deck${i + 1}-clear-button"
+                style="padding: 0.5rem 1rem"
+                type="button"
+              >
+                Clear Deck
+              </button>
+            </div>`;
       html += `</div>`; // closes <div class="deck-input-wrapper">
       if (i === 3) {
         html += `</div>`;
@@ -164,18 +205,39 @@ document.addEventListener("DOMContentLoaded", function () {
     for (const deck_input of deck_input_ids) {
       const element = document.getElementById(deck_input);
       element.addEventListener("keydown", async function (event) {
-        console.log(element);
         if (event.key === "Enter") {
           event.preventDefault();
+
           const currDeckId = element.id.split("-").pop();
           const currDeck = await document.getElementById(currDeckId);
+          let alts = [];
+
+          for (row of currDeck.querySelectorAll(".picture-row")) {
+            for (potential of row.querySelectorAll(".empty-card")) {
+              potentialAlt = potential.getAttribute("alt");
+              const checker = potentialAlt.substring(0, 4);
+              if (checker !== "deck") {
+                alts.push(potentialAlt);
+              }
+            }
+          }
+
           let query = "";
           cardsSet.forEach((card) => {
             query += card + ",";
           });
+
           const wanted_cards = element.value.trim();
           query += wanted_cards;
-          console.log(query);
+          let queries = query.split(",");
+
+          for (alt of alts) {
+            const checker = "!" + alt;
+            queries = queries.filter((q) => q.trim() !== checker);
+            queries.push(alt);
+          }
+          query = queries.join(",");
+
           const deck_in_html = await window.fillInSuggestions(query, ",1");
           const parser = new DOMParser();
           const doc = parser.parseFromString(deck_in_html, "text/html");
@@ -185,10 +247,32 @@ document.addEventListener("DOMContentLoaded", function () {
           const images = doc.querySelectorAll("img");
           const imageSrcs = Array.from(images).map((img) => img.src);
 
-          for (imageSrc of imageSrcs) {
-            console.log(imageSrcs[0]);
+          const names = Array.from(images).map((n) => n.alt);
+
+          let i = 0;
+          for (row of currDeck.querySelectorAll(".picture-row")) {
+            for (card of row.querySelectorAll(".empty-card")) {
+              saveCard(imageSrcs[i], names[i], card.getAttribute("id"));
+              i += 1;
+            }
           }
         }
+      });
+    }
+
+    for (const copy_button_id of copy_button_ids) {
+      copy_button = document.getElementById(copy_button_id);
+      copy_button.addEventListener("click", async function (event) {
+        const deck = document.getElementById(copy_button_id.substring(0, 4));
+        console.log(deck);
+        
+        let ids = [];
+        
+        event.preventDefault();
+        window.open(
+          `https://link.clashroyale.com/deck/en?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}`,
+          "_blank"
+        );
       });
     }
   };

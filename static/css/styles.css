@@ -131,3 +131,9 @@
 #select-card {
   display: none;
 }
+
+.deck-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
