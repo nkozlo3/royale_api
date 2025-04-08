@@ -32,9 +32,13 @@ def populate_cards(data):
 
         icons = card['iconUrls']
         picUrl = icons['medium']
-        print(formatNames(card['name']))
-        classifications = input("Please input the classifications for this card, CSV, from (damage, main-condition, win-condition, small-spell, spell, building, spawner, defense): ")
-        curr = Card(id=card['id'],name=formatNames(card['name']),rarity=card['rarity'],elixir=elixirCost,classification=classifications,picture_url=picUrl)
+        filteredName = formatNames(card['name'])
+        print(filteredName)
+        exists = Card.query.filter_by(name=filteredName).first()
+        if exists:
+            print("This card is already in your database")
+            continue
+        curr = Card(id=card['id'],name=filteredName,rarity=card['rarity'],elixir=elixirCost,picture_url=picUrl)
         db.session.add(curr)
         db.session.commit()
         

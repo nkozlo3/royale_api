@@ -35,7 +35,6 @@ def generate_cards_json():
             "name": card.name,
             "rarity": card.rarity,
             "elixir": card.elixir,
-            "classification": card.classification,
             "has_evolution": card.has_evolution,
             "evolution_picture_url":card.evolution_picture_url,
             "picture_url": card.picture_url 
