@@ -40,7 +40,7 @@ This is a Flask application that allows users to create and manage Clash Royale 
 2. Set up a virtual environment and install dependencies:
     ```sh
     python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    source venv/bin/activate
     pip install -r requirements.txt
     ```
 
