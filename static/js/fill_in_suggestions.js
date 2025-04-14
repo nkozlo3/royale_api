@@ -36,7 +36,7 @@ async function fillInSuggestions(query, amount) {
           <a
           class="deck-link"
           target="_blank"
-          href="https://link.clashroyale.com/deck/en?deck=${deck.card1.id};${deck.card2.id};${deck.card3.id};${deck.card4.id};${deck.card5.id};${deck.card6.id};${deck.card7.id};${deck.card8.id}"
+          href="https://link.clashroyale.com/en/?clashroyale://copyDeck?deck=${deck.card1.id};${deck.card2.id};${deck.card3.id};${deck.card4.id};${deck.card5.id};${deck.card6.id};${deck.card7.id};${deck.card8.id}&l=Royals"
         >
           <div class="deck">
             <div class="picture-row" id="picture-row">

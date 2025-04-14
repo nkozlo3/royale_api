@@ -67,8 +67,9 @@ def populate_decks(data):
     for player in players:
         tag = player['tag']
         tag = tag.replace("#", "%23")
-        if done % 10 == 0:
-            time.sleep(2)
+        if done % 20 == 0:
+            print("CHECKEd THIS MANY SIGMAS: ", done)
+            time.sleep(3)
         api_key = os.environ.get("ROYALE_API_KEY")
         url = f"https://api.clashroyale.com/v1/players/{tag}"
         headers = {"Authorization": f"Bearer {api_key}"}
@@ -88,19 +89,20 @@ def populate_decks(data):
 
 def update_decks():
     api_key = os.environ.get("ROYALE_API_KEY")
-    location = 57000249
-    url = f"https://api.clashroyale.com/v1/locations/{location}/pathoflegend/players"
-    headers = {"Authorization": f"Bearer {api_key}"}
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        data = response.json()
+    locations = [57000249, 57000122]
+    for location in locations:
+        url = f"https://api.clashroyale.com/v1/locations/{location}/pathoflegend/players"
+        headers = {"Authorization": f"Bearer {api_key}"}
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            data = response.json()
 
-        populate_decks(data)
-        return jsonify({"message":"Decks populated succesfully"}), 201
-    except requests.exceptions.RequestException as e:
-        print("error: ", str(e))
-        return jsonify({"error": str(e)}), 500
+            populate_decks(data)
+            return jsonify({"message":"Decks populated succesfully"}), 201
+        except requests.exceptions.RequestException as e:
+            print("error: ", str(e))
+            return jsonify({"error": str(e)}), 500
 
 @search_bp.route('/update-meta-decks', methods=['POST'])
 def update_meta_decks():

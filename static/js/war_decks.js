@@ -106,10 +106,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function generateInnerHTML(urls, ids) {
     let html = "";
-    let link = "https://link.clashroyale.com/deck/en?deck=" + ids[0];
+    let link = "https://link.clashroyale.com/en/?clashroyale://copyDeck?deck=" + ids[0];
     for (let j = 1; j < ids.length; j++) {
       link += ";" + ids[j];
     }
+    link += "&l=Royals";
     for (let i = 0; i < 4; i++) {
       if (i === 0) {
         html += `<div class="deck-row">`;
@@ -288,7 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         event.preventDefault();
         window.open(
-          `https://link.clashroyale.com/deck/en?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}`,
+          `https://link.clashroyale.com/deck/en?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}&l=Royals`,
           "_blank"
         );
       });
