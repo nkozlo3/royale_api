@@ -29,16 +29,25 @@ def populate_cards(data):
         elixirCost = -1
         if card['name'] != "Mirror":
             elixirCost=card['elixirCost']
-
+        maxEvolutionLevel = 0
         icons = card['iconUrls']
+        evolution_picture_url = None
         picUrl = icons['medium']
+        try:
+            maxEvolutionLevel = card['maxEvolutionLevel']
+            evolution_picture_url = icons['evolutionMedium']
+        except KeyError as e:
+            print(f"No evolution for {card['name']}")
+        hasEvolution = True if maxEvolutionLevel else False
+        
         filteredName = formatNames(card['name'])
-        print(filteredName)
+
+        print(hasEvolution, evolution_picture_url)
         exists = Card.query.filter_by(name=filteredName).first()
         if exists:
             print("This card is already in your database")
             continue
-        curr = Card(id=card['id'],name=filteredName,rarity=card['rarity'],elixir=elixirCost,picture_url=picUrl)
+        curr = Card(id=card['id'],name=filteredName,rarity=card['rarity'],elixir=elixirCost,has_evolution=hasEvolution,evolution_picture_url=evolution_picture_url,picture_url=picUrl)
         db.session.add(curr)
         db.session.commit()
         

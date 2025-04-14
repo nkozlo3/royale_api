@@ -107,12 +107,12 @@ def update_decks():
             response = requests.get(url, headers=headers)
             response.raise_for_status()
             data = response.json()
-
             populate_decks(data)
-            return jsonify({"message":"Decks populated succesfully"}), 201
         except requests.exceptions.RequestException as e:
             print("error: ", str(e))
             return jsonify({"error": str(e)}), 500
+        
+        return jsonify({"message":"Decks populated succesfully"}), 201
 
 @search_bp.route('/update-meta-decks', methods=['POST'])
 def update_meta_decks():
@@ -141,6 +141,7 @@ def get_deck_lists(decks):
             picture_urls.append(card.picture_url)
         card1 = Card.query.get(card_ids[0])
         card2 = Card.query.get(card_ids[1])
+        print(card1.has_evolution)
         picture_urls[0] = card1.evolution_picture_url if card1.has_evolution else picture_urls[0]
         picture_urls[1] = card2.evolution_picture_url if card2.has_evolution else picture_urls[1]
 
