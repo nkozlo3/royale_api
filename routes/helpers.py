@@ -14,6 +14,7 @@ def generate_decks_json():
         decks_list.append({
             "id":deck.id,
             "cards": deck.cards,
+            "tower_troop_id": deck.tower_troop_id,
             "card_ids": deck.card_ids,
             "date_added": deck.date_added.strftime('%Y-%m-%d %H:%M:%S')
         })

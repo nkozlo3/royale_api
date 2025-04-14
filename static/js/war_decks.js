@@ -106,10 +106,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function generateInnerHTML(urls, ids) {
     let html = "";
-    let link = "https://link.clashroyale.com/en/?clashroyale://copyDeck?deck=" + ids[0];
+    let link =
+      "https://link.clashroyale.com/en/?clashroyale://copyDeck?deck=" + ids[0];
     for (let j = 1; j < ids.length; j++) {
       link += ";" + ids[j];
     }
+    link += "&tt=" + ids[0];
     link += "&l=Royals";
     for (let i = 0; i < 4; i++) {
       if (i === 0) {
@@ -250,19 +252,18 @@ document.addEventListener("DOMContentLoaded", function () {
           const doc = parser.parseFromString(deck_in_html, "text/html");
           const linkElement = doc.querySelector("a.deck-link");
           if (linkElement === null) {
-            console.log("THIS IS WORKINGISH");
             errorDisp.innerHTML = `<b style="color: red"> No decks available with these cards. </b>`;
             return;
           }
           const href = linkElement ? linkElement.href : null;
-          let ids = href.split("=")[1].split(";");
+          const tower_troop_id = href.split("=")[2].split("&")[0];
+          let ids = href.split("=")[1].split("&")[0].split(";");
           const images = doc.querySelectorAll("img");
           const imageSrcs = Array.from(images).map((img) => img.src);
           let names = Array.from(images).map((n) => n.alt);
           for (let index = 0; index < 8; index++) {
             names[index] += ids[index];
           }
-
           let i = 0;
           for (row of currDeck.querySelectorAll(".picture-row")) {
             for (card of row.querySelectorAll(".empty-card")) {
@@ -286,10 +287,11 @@ document.addEventListener("DOMContentLoaded", function () {
             ids.push(cardName.slice(-8));
           }
         }
-
+        // TODO: update tower troop here to be the actual tower troop
+        const tower_troop_id = "159000000";
         event.preventDefault();
         window.open(
-          `https://link.clashroyale.com/deck/en?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}&l=Royals`,
+          `https://link.clashroyale.com/en/?clashroyale://copyDeck?deck=${ids[0]};${ids[1]};${ids[2]};${ids[3]};${ids[4]};${ids[5]};${ids[6]};${ids[7]}&tt=${tower_troop_id}&l=Royals`,
           "_blank"
         );
       });

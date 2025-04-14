@@ -1,6 +1,5 @@
-from models import db, Card, Deck
-import random
-from flask import Blueprint, jsonify, render_template
+from models import db
+from flask import Blueprint, render_template
 
 war_decks_bp = Blueprint('war_decks', __name__)
 

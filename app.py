@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from models import Card, db, Deck
+from models import db
 from flask_migrate import Migrate
 from config import Config
 import requests

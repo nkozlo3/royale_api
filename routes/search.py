@@ -36,11 +36,20 @@ def formatNames(cards):
     cards = make_unique(cards)
     return cards
 
-def add_deck(deck):
+def add_deck(deck, tower_troop):
     cards = ""
     card_ids = ""
     cards_l = []
     cards_ids_l = []
+    if not tower_troop:
+        print("Error:  tower_troop is empty. Skipping this deck.")
+    
+    try:
+        tower_troop_id = tower_troop[0]['id']
+    except (IndexError, KeyError) as e:
+        print(f"Error accessing tower_troop: {e}. Skipping this deck.")
+        return
+    
     for card in deck:
         cards_l.append(card['name'])
         cards_ids_l.append(str(card['id']))
@@ -55,7 +64,7 @@ def add_deck(deck):
         print(f"Deck Already Exists.")
         return
     
-    currDeck = Deck(cards=cards, card_ids=card_ids)
+    currDeck = Deck(cards=cards, card_ids=card_ids, tower_troop_id=tower_troop_id)
     db.session.add(currDeck)
     db.session.commit()
     print(f"Deck added: {currDeck.cards}")
@@ -79,9 +88,10 @@ def populate_decks(data):
             response.raise_for_status()
             data = response.json()
             deck = data['currentDeck']
+            tower_troop = data['currentDeckSupportCards']
             
-            add_deck(deck)
-        except requests.exceptions.RequestException as e:
+            add_deck(deck, tower_troop)
+        except Exception as e:
             print(f"error fetching data for player: {str(e)}")
         done += 1
 
@@ -117,12 +127,14 @@ def update_meta_decks():
 
 def get_deck_lists(decks):
     card_ids_lists = []
+    tower_troops_ids_lists = []
     card_names_lists = []
     picture_urls_lists = []
     
     for deck in decks:
         card_ids = deck.card_ids.split(',')
         card_names = deck.cards.split(',')
+        tower_troop_id = deck.tower_troop_id
         picture_urls = []
         for id in card_ids:
             card = Card.query.get(id)
@@ -135,8 +147,9 @@ def get_deck_lists(decks):
         card_ids_lists.append(card_ids)
         card_names_lists.append(card_names)
         picture_urls_lists.append(picture_urls)
+        tower_troops_ids_lists.append(tower_troop_id)
         
-    return card_ids_lists, card_names_lists, picture_urls_lists
+    return card_ids_lists, card_names_lists, tower_troops_ids_lists, picture_urls_lists
 
 @search_bp.route('/fetch-meta-decks', methods=['GET'])
 def generate_and_fetch_meta_deck():
@@ -181,8 +194,7 @@ def generate_and_fetch_meta_deck():
     diff = datetime.utcnow() - toCheck.date_added
     if diff.days >= 30:
         update_needed = True
-    card_ids_lists, card_names_lists, picture_urls_lists = get_deck_lists(decks)
-
+    card_ids_lists, card_names_lists, tower_troop_ids_lists, picture_urls_lists = get_deck_lists(decks)
     deck_names = ["deck" + str(i) for i in range(1, len(card_ids_lists) + 1)]
 
     return jsonify({
@@ -191,7 +203,8 @@ def generate_and_fetch_meta_deck():
                     card : {
                         "picture_url": picture_urls_lists[j][i],
                         "name": card_names_lists[j][i],
-                        "id": card_ids_lists[j][i]
+                        "id": card_ids_lists[j][i],
+                        "tower_troop": tower_troop_ids_lists[j]
                     }
                     for i, card in enumerate(cards)
                 }
