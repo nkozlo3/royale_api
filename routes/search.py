@@ -54,6 +54,10 @@ def add_deck(deck, tower_troop):
         cards_l.append(card['name'])
         cards_ids_l.append(str(card['id']))
 
+    if len(cards_l) < 8:
+        print(f"Not enough cards in that deck.")
+        return
+    
     cards = sorted(cards)
     cards = ",".join(cards_l)
     cards = formatNames(cards)
@@ -66,7 +70,6 @@ def add_deck(deck, tower_troop):
     
     currDeck = Deck(cards=cards, card_ids=card_ids, tower_troop_id=tower_troop_id)
     db.session.add(currDeck)
-    db.session.commit()
     print(f"Deck added: {currDeck.cards}")
 
 
@@ -76,9 +79,10 @@ def populate_decks(data):
     for player in players:
         tag = player['tag']
         tag = tag.replace("#", "%23")
-        if done % 20 == 0:
+        if done % 40 == 0:
             print("CHECKEd THIS MANY SIGMAS: ", done)
-            time.sleep(3)
+            db.session.commit()
+            # time.sleep(3)
         api_key = os.environ.get("ROYALE_API_KEY")
         url = f"https://api.clashroyale.com/v1/players/{tag}"
         headers = {"Authorization": f"Bearer {api_key}"}
@@ -99,7 +103,7 @@ def populate_decks(data):
 
 def update_decks():
     api_key = os.environ.get("ROYALE_API_KEY")
-    locations = [57000249, 57000122]
+    locations = [57000122]
     for location in locations:
         url = f"https://api.clashroyale.com/v1/locations/{location}/pathoflegend/players"
         headers = {"Authorization": f"Bearer {api_key}"}
@@ -112,7 +116,7 @@ def update_decks():
             print("error: ", str(e))
             return jsonify({"error": str(e)}), 500
         
-        return jsonify({"message":"Decks populated succesfully"}), 201
+    return jsonify({"message":"Decks populated succesfully"}), 201
 
 @search_bp.route('/update-meta-decks', methods=['POST'])
 def update_meta_decks():

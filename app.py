@@ -1,9 +1,7 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, render_template
 from models import db
 from flask_migrate import Migrate
 from config import Config
-import requests
-import os
 from dotenv import load_dotenv
 from routes import register_routes
 
