@@ -103,7 +103,7 @@ def populate_decks(data):
 
 def update_decks():
     api_key = os.environ.get("ROYALE_API_KEY")
-    locations = [57000122]
+    locations = [57000122, 57000249]
     for location in locations:
         url = f"https://api.clashroyale.com/v1/locations/{location}/pathoflegend/players"
         headers = {"Authorization": f"Bearer {api_key}"}
@@ -145,7 +145,6 @@ def get_deck_lists(decks):
             picture_urls.append(card.picture_url)
         card1 = Card.query.get(card_ids[0])
         card2 = Card.query.get(card_ids[1])
-        print(card1.has_evolution)
         picture_urls[0] = card1.evolution_picture_url if card1.has_evolution else picture_urls[0]
         picture_urls[1] = card2.evolution_picture_url if card2.has_evolution else picture_urls[1]
 
@@ -159,31 +158,31 @@ def get_deck_lists(decks):
 @search_bp.route('/fetch-meta-decks', methods=['GET'])
 def generate_and_fetch_meta_deck():
     query = request.args.get('query', '').strip()
-    amount = query[len(query)-1]
-    query = query[:len(query)-1]
+    amount = query[len(query)-2:] if query[len(query) - 2].isnumeric() else query[len(query)-1]
+    query = query[:len(query)-2] if query[len(query) - 2].isnumeric() else query[:len(query)-1]
     query = formatNames(query)
     query = query.split(",")
     contains = [q for q in query if q and q[0] != '!']
     notContains = [q[1:] for q in query if q and q[0] == '!']
     
     
-    two_months_ago = datetime.utcnow() - timedelta(days=60)
+    one_months_ago = datetime.utcnow() - timedelta(days=30)
     cards = ["card1", "card2", "card3", "card4", "card5", "card6", "card7", "card8"]
     toCheck = Deck.query.filter(
-        Deck.date_added >= two_months_ago,
+        Deck.date_added >= one_months_ago,
         db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
         db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
     ).distinct().order_by(func.random()).first()
     
     decks = Deck.query.filter(
-        Deck.date_added >= two_months_ago,
+        Deck.date_added >= one_months_ago,
         db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
         db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
     ).distinct().order_by(func.random()).limit(amount)
 
     update_needed = False
     if not toCheck:
-        toCheck = Deck.query.filter(Deck.date_added >= two_months_ago).first()
+        toCheck = Deck.query.filter(Deck.date_added >= one_months_ago).first()
         if toCheck:
             return jsonify({
                 "message": "No meta decks found that contain all your input. Please try again with different cards or make sure you don't have spelling mistakes.",

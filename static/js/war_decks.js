@@ -323,13 +323,15 @@ document.addEventListener("DOMContentLoaded", function () {
   button.addEventListener("click", async () => {
     let query = "";
     cardsSet.forEach((element) => {
-      query += element + ",";
+      let originalName = element.replace(/\d{8}$/, "");
+      query += originalName + ",";
     });
+    console.log(query);
     const wanted_cards = searchInput.value.trim();
     query += wanted_cards;
     war_decks_suggestions_display.innerHTML = await window.fillInSuggestions(
       query,
-      ",8"
+      ",32"
     );
   });
 });
