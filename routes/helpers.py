@@ -2,7 +2,7 @@ import os
 import requests
 import json
 from flask import Blueprint, request, jsonify
-from models import db, Deck, Card
+from models import Deck, Card
 
 helper_bp = Blueprint('helpers', __name__)
 

@@ -1,6 +1,7 @@
 Flask
 Flask-MySQLdb
 Flask-SQLAlchemy
+Flask-Migrate
 requests
 python-dotenv
 pytest

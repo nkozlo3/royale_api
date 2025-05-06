@@ -1,6 +1,6 @@
 import os
 import re
-import fcntl
+# import fcntl
 import time
 import requests
 from flask import Blueprint, request, jsonify, render_template
@@ -23,8 +23,8 @@ def search():
     return render_template('search.html')
 
 def make_unique(cards):
-    toReplace = ["minipekka", "megaminion", "minions", "giantskeleton", "electrogiant", "giantsnowball", "electrowizard", "icewizard", "royalgiant", "goblingiant", "runegiant", "megaknight", "goldenknight", "bossbandit"]
-    replaceWith = ["mini", "megam", "minids", "giaskele", "elecg", "gisnowball", "electrow", "icewiz", "royg", "gobant", "runeg", "megakn", "goldkn", "bossandit"]
+    toReplace = ["minipekka", "megaminion", "minions", "giantskeleton", "electrogiant", "giantsnowball", "electrowizard", "icewizard", "royalgiant", "goblingiant", "runegiant", "megaknight", "goldenknight", "bossbandit", "darkprince", "littleprince", "princess"]
+    replaceWith = ["mini", "megam", "minids", "giaskele", "elecg", "gisnowball", "electrow", "icewiz", "royg", "gobant", "runeg", "megakn", "goldkn", "bossandit", "dapr", "littlepr", "firepr"]
     
     for toChange, change in zip(toReplace, replaceWith):
         cards = cards.replace(toChange, change)
@@ -121,8 +121,8 @@ def update_decks():
 @search_bp.route('/update-meta-decks', methods=['POST'])
 def update_meta_decks():
     try:
-        with open(LOCK_FILE, "w") as lock_file:
-            fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        # with open(LOCK_FILE, "w") as lock_file:
+            # fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
             return update_decks()
     except BlockingIOError:
         return jsonify({

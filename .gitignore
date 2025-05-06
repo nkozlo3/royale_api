@@ -2,3 +2,4 @@
 mydata.sql
 postgres_dump.sql
 /routes/__pycache__/*
+pop_database.py
