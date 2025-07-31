@@ -5,7 +5,7 @@ import time
 import requests
 from flask import Blueprint, request, jsonify, render_template
 from models import db, Deck, Card
-from sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import func, desc
 from datetime import datetime, timedelta
 
 LOCK_FILE = "/tmp/update_meta_decks.lock"
@@ -53,6 +53,69 @@ def add_deck(deck, tower_troop):
     for card in deck:
         cards_l.append(card['name'])
         cards_ids_l.append(str(card['id']))
+def add_deck(deck, tower_troop):
+    cards = ""
+    card_ids = ""
+    cards_l = []
+    cards_ids_l = []
+    if not tower_troop:
+        print("Error:  tower_troop is empty. Skipping this deck.")
+    
+    try:
+        tower_troop_id = tower_troop[0]['id']
+    except (IndexError, KeyError) as e:
+        print(f"Error accessing tower_troop: {e}. Skipping this deck.")
+        return
+    
+    for card in deck:
+        cards_l.append(card['name'])
+        cards_ids_l.append(str(card['id']))
+
+    if len(cards_l) < 8:
+        print(f"Not enough cards in that deck.")
+        return
+    cards_l = sorted(cards_l)
+
+    cards = ",".join(cards_l)
+    cards = formatNames(cards)
+    card_ids = ",".join(cards_ids_l)
+    
+    existing_deck = Deck.query.filter_by(cards=cards).first()
+    if existing_deck:
+        print(f"Deck Already Exists.")
+        existing_deck.alpha = existing_deck.alpha + 1
+        return
+    
+    currDeck = Deck(cards=cards, card_ids=card_ids, tower_troop_id=tower_troop_id, alpha=1)
+    db.session.add(currDeck)
+    print(f"Deck added: {currDeck.cards}")
+
+
+def populate_decks(data):
+    players = data['items']
+    done = 0
+    for player in players:
+        tag = player['tag']
+        tag = tag.replace("#", "%23")
+        if done % 40 == 0:
+            print("CHECKEd THIS MANY SIGMAS: ", done)
+            db.session.commit()
+            # time.sleep(3)
+        api_key = os.environ.get("ROYALE_API_KEY")
+        url = f"https://api.clashroyale.com/v1/players/{tag}"
+        headers = {"Authorization": f"Bearer {api_key}"}
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+            deck = data['currentDeck']
+            tower_troop = data['currentDeckSupportCards']
+            
+            add_deck(deck, tower_troop)
+        except Exception as e:
+            print(f"error fetching data for player: {str(e)}")
+        done += 1
 
     if len(cards_l) < 8:
         print(f"Not enough cards in that deck.")
@@ -66,9 +129,10 @@ def add_deck(deck, tower_troop):
     existing_deck = Deck.query.filter_by(cards=cards).first()
     if existing_deck:
         print(f"Deck Already Exists.")
+        existing_deck.alpha = existing_deck.alpha + 1
         return
     
-    currDeck = Deck(cards=cards, card_ids=card_ids, tower_troop_id=tower_troop_id)
+    currDeck = Deck(cards=cards, card_ids=card_ids, tower_troop_id=tower_troop_id, alpha=1)
     db.session.add(currDeck)
     print(f"Deck added: {currDeck.cards}")
 
@@ -129,13 +193,18 @@ def update_meta_decks():
             "message": "Another process is updating the database. Please wait."
         }), 409
 
-def get_deck_lists(decks):
+def get_deck_lists(decks, amount):
+    amount = int(amount)
     card_ids_lists = []
     tower_troops_ids_lists = []
     card_names_lists = []
     picture_urls_lists = []
     
-    for deck in decks:
+    for i in range(amount, -1, -1):
+        try:
+            deck = decks[i]
+        except Exception as e:
+            continue
         card_ids = deck.card_ids.split(',')
         card_names = deck.cards.split(',')
         tower_troop_id = deck.tower_troop_id
@@ -158,13 +227,14 @@ def get_deck_lists(decks):
 @search_bp.route('/fetch-meta-decks', methods=['GET'])
 def generate_and_fetch_meta_deck():
     query = request.args.get('query', '').strip()
+    alphaFilter = query[len(query)-1]
+    query = query[:len(query)-2]
     amount = query[len(query)-2:] if query[len(query) - 2].isnumeric() else query[len(query)-1]
     query = query[:len(query)-2] if query[len(query) - 2].isnumeric() else query[:len(query)-1]
     query = formatNames(query)
     query = query.split(",")
     contains = [q for q in query if q and q[0] != '!']
     notContains = [q[1:] for q in query if q and q[0] == '!']
-    
     
     one_months_ago = datetime.utcnow() - timedelta(days=30)
     cards = ["card1", "card2", "card3", "card4", "card5", "card6", "card7", "card8"]
@@ -173,12 +243,19 @@ def generate_and_fetch_meta_deck():
         db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
         db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
     ).distinct().order_by(func.random()).first()
-    
-    decks = Deck.query.filter(
-        Deck.date_added >= one_months_ago,
-        db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
-        db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
-    ).distinct().order_by(func.random()).limit(amount)
+    decks = "i exist :)"
+    if (alphaFilter == '0'):
+        decks = Deck.query.filter(
+            Deck.date_added >= one_months_ago,
+            db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
+            db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
+        ).distinct().order_by(func.random()).limit(amount)
+    else:
+        decks = Deck.query.filter(
+            Deck.date_added >= one_months_ago,
+            db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
+            db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
+        ).distinct().order_by(desc(Deck.alpha)).limit(amount)
 
     update_needed = False
     if not toCheck:
@@ -198,7 +275,7 @@ def generate_and_fetch_meta_deck():
     diff = datetime.utcnow() - toCheck.date_added
     if diff.days >= 30:
         update_needed = True
-    card_ids_lists, card_names_lists, tower_troop_ids_lists, picture_urls_lists = get_deck_lists(decks)
+    card_ids_lists, card_names_lists, tower_troop_ids_lists, picture_urls_lists = get_deck_lists(decks, amount)
     deck_names = ["deck" + str(i) for i in range(1, len(card_ids_lists) + 1)]
 
     return jsonify({

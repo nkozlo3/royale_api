@@ -18,3 +18,4 @@ class Deck(db.Model):
     tower_troop_id = db.Column(db.String(10))
     card_ids = db.Column(db.String(100)) # comma seperated card ids
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    alpha = db.Column(db.Integer)

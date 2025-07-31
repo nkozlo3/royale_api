@@ -1,6 +1,8 @@
-async function fillInSuggestions(query, amount) {
+async function fillInSuggestions(query, amount, alphaFiltering = 0) {
   try {
     query += amount;
+    query += ",";
+    query += alphaFiltering;
     const response = await fetch(
       `/search/fetch-meta-decks?query=${encodeURIComponent(query)}`
     );
