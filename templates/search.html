@@ -13,8 +13,9 @@
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
     <script src="{{url_for('static', filename='js/fill_in_suggestions.js')}}"></script>
-    <script src="{{url_for('static', filename='js/generate_meta_deck.js')}}"></script>
+    <script type="module" src="{{url_for('static', filename='js/generate_meta_deck.js')}}"></script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script type="module" src="{{url_for('static', filename='js/alpha_filter.js')}}"></script>
   </head>
   <body>
     <!-- <div -->

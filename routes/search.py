@@ -1,3 +1,4 @@
+import fcntl
 import os
 import re
 # import fcntl
@@ -146,7 +147,6 @@ def populate_decks(data):
         if done % 40 == 0:
             print("CHECKEd THIS MANY SIGMAS: ", done)
             db.session.commit()
-            # time.sleep(3)
         api_key = os.environ.get("ROYALE_API_KEY")
         url = f"https://api.clashroyale.com/v1/players/{tag}"
         headers = {"Authorization": f"Bearer {api_key}"}
@@ -185,8 +185,8 @@ def update_decks():
 @search_bp.route('/update-meta-decks', methods=['POST'])
 def update_meta_decks():
     try:
-        # with open(LOCK_FILE, "w") as lock_file:
-            # fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with open(LOCK_FILE, "w") as lock_file:
+            fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
             return update_decks()
     except BlockingIOError:
         return jsonify({
@@ -200,7 +200,7 @@ def get_deck_lists(decks, amount):
     card_names_lists = []
     picture_urls_lists = []
     
-    for i in range(amount, -1, -1):
+    for i in range(amount):
         try:
             deck = decks[i]
         except Exception as e:
@@ -251,6 +251,7 @@ def generate_and_fetch_meta_deck():
             db.and_(*[~Deck.cards.ilike(f"%{name}%") for name in notContains])
         ).distinct().order_by(func.random()).limit(amount)
     else:
+        amount = 5
         decks = Deck.query.filter(
             Deck.date_added >= one_months_ago,
             db.and_(*[Deck.cards.ilike(f"%{name}%") for name in contains]),
@@ -277,7 +278,6 @@ def generate_and_fetch_meta_deck():
         update_needed = True
     card_ids_lists, card_names_lists, tower_troop_ids_lists, picture_urls_lists = get_deck_lists(decks, amount)
     deck_names = ["deck" + str(i) for i in range(1, len(card_ids_lists) + 1)]
-
     return jsonify({
             "decks" : {
                 deck_name : {

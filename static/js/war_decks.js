@@ -1,3 +1,7 @@
+// import { alphaFiltering, setAlphaFiltering } from "./alpha_filter.js";
+
+import { alphaFiltering, setAlphaFiltering } from "./alpha_filter.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   const button = document.getElementById("generate-war-decks");
   const cancel = document.getElementById("cancel-card-button");
@@ -183,7 +187,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   window.onload = function () {
-    urls = [
+    setAlphaFiltering(0);
+    let urls = [
       "../static/images/blank_slot.png",
       "../static/images/blank_slot.png",
       "../static/images/blank_slot.png",
@@ -193,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "../static/images/blank_slot.png",
       "../static/images/blank_slot.png",
     ];
-    ids = [
+    let ids = [
       "00000000",
       "00000000",
       "00000000",
@@ -203,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "00000000",
       "00000000",
     ];
-    html = generateInnerHTML(urls, ids);
+    const html = generateInnerHTML(urls, ids);
     display.innerHTML = html;
 
     for (const deck_input of deck_input_ids) {
@@ -331,7 +336,8 @@ document.addEventListener("DOMContentLoaded", function () {
     query += wanted_cards;
     war_decks_suggestions_display.innerHTML = await window.fillInSuggestions(
       query,
-      ",32"
+      ",32", 
+      alphaFiltering
     );
   });
 });

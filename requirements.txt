@@ -5,3 +5,4 @@ Flask-Migrate
 requests
 python-dotenv
 pytest
+gunicorn
